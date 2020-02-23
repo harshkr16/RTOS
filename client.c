@@ -44,8 +44,8 @@ int main(int argc, char *argv[])
 	memset(their_addr.sin_zero,'\0',sizeof(their_addr.sin_zero));
 	their_addr.sin_family = AF_INET;
 	their_addr.sin_port = htons(portno);
-	inet_pton(AF_INET, argv[3], &their_addr.sin_addr);
-	//their_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	//inet_pton(AF_INET, argv[3], &their_addr.sin_addr);
+	their_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
 	if(connect(my_sock,(struct sockaddr *)&their_addr,sizeof(their_addr)) < 0) {
 		perror("connection not esatablished");

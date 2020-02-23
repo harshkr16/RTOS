@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <pthread.h>
+#include <time.h>
 struct client_info {
 	int sockno;
 	char ip[INET_ADDRSTRLEN];
@@ -31,14 +32,33 @@ void sendtoall(char *msg,int curr)
 void *recvmg(void *sock)
 {
 	struct client_info cl = *((struct client_info *)sock);
-	char msg[500];
+	char msg[500],str[500];
 	int len;
+	double time_spent=0.0;
 	int i;
 	int j;
+	
+	
 	while((len = recv(cl.sockno,msg,500,0)) > 0) {
-		msg[len] = '\0';
-		sendtoall(msg,cl.sockno);
-		memset(msg,'\0',sizeof(msg));
+		clock_t begin=clock();
+		//msg[len] = '\0';
+		 int j = 0; 
+		char str[1000];
+		strcpy(str,msg); 
+		char ch; 
+			  
+			    	while (str[j]) { 
+					ch = str[j]; 
+					str[j]=(toupper(ch)); 
+					j++; 
+			    		       }
+		
+		sendtoall(str,cl.sockno);
+		memset(str,'\0',sizeof(msg));
+		
+	clock_t end=clock();
+	time_spent+=(end-begin);
+	printf("processing time by server: %f microseconds\n",time_spent);
 	}
 	pthread_mutex_lock(&mutex);
 	printf("%s disconnected\n",cl.ip);
@@ -81,7 +101,7 @@ int main(int argc,char *argv[])
 	their_addr_size = sizeof(their_addr);
 
 	if(bind(my_sock,(struct sockaddr *)&my_addr,sizeof(my_addr)) != 0) {
-		perror("binding unsuccessful");`
+		perror("binding unsuccessful");
 		exit(1);
 	}
 
